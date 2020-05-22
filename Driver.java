@@ -63,7 +63,9 @@ public class Driver extends JPanel implements ActionListener, KeyListener, Mouse
 			ball.paint(g);
 			for (int i = 0; i < 12; i++) {
 				for (int j = 0; j < columns.get(i).getLength(); j++) {
-					columns.get(i).getBrickList().get(j).paint(g);
+					if (columns.get(i).getBrickList().get(j).isActive()) {
+						columns.get(i).getBrickList().get(j).paint(g);
+					}
 				}
 			}
 		}
@@ -78,6 +80,7 @@ public class Driver extends JPanel implements ActionListener, KeyListener, Mouse
 			ball.move();
 			ball.collide(p);
 			brickCollision(ball);
+			brickBouncer(ball);
 		}
 
 		if (p.getX() <= -25) {
@@ -124,25 +127,122 @@ public class Driver extends JPanel implements ActionListener, KeyListener, Mouse
 	public void brickCollision(Ball b) {
 		for (int i = 0; i < 12; i++) {
 			for (int j = 0; j < columns.get(i).getBrickList().size(); j++) {
-				if (b.getY() < columns.get(i).getBrickList().get(j).getY() + 55
+				if ((b.getY() < columns.get(i).getBrickList().get(j).getY() + 55
+						&& b.getY() > columns.get(i).getBrickList().get(j).getY() + 55 - 20// bottom collision
 						&& b.getX() + 19 > columns.get(i).getBrickList().get(j).getX()
-						&& b.getX() + 19 < columns.get(i).getBrickList().get(j).getX() + 160) {
+						&& b.getX() + 19 < columns.get(i).getBrickList().get(j).getX() + 160
+						&& columns.get(i).getBrickList().get(j).isActive())
+						|| (b.getY() + 38 > columns.get(i).getBrickList().get(j).getY()
+								&& b.getY() + 38 < columns.get(i).getBrickList().get(j).getY() + 20 // top collision
+								&& b.getX() + 19 > columns.get(i).getBrickList().get(j).getX()
+								&& b.getX() + 19 < columns.get(i).getBrickList().get(j).getX() + 160
+								&& columns.get(i).getBrickList().get(j).isActive())
+						|| (b.getY() < columns.get(i).getBrickList().get(j).getY() + 55 // left collision
+								&& b.getY() + 38 > columns.get(i).getBrickList().get(j).getY()
+								&& b.getX() + 38 > columns.get(i).getBrickList().get(j).getX()
+								&& b.getX() + 38 < columns.get(i).getBrickList().get(j).getX() + 38
+								&& columns.get(i).getBrickList().get(j).isActive())
+						|| (b.getY() < columns.get(i).getBrickList().get(j).getY() + 55 // right collision
+								&& b.getY() + 38 > columns.get(i).getBrickList().get(j).getY()
+								&& b.getX() < columns.get(i).getBrickList().get(j).getX() + 160
+								&& b.getX() > columns.get(i).getBrickList().get(j).getX() + 160 - 38
+								&& columns.get(i).getBrickList().get(j).isActive())) {
+					
+					if (columns.get(i).getBrickList().get(j).getNumHits() == 0) {
+
+						// call replacer
+						replaceBrick(i, j);
+						// call brick checker to de-activate bricks
+					}
+					columns.get(i).getBrickList().get(j)
+							.setNumHits(columns.get(i).getBrickList().get(j).getNumHits() + 1);
+					brickChecker();
+
+				}
+
+			}
+		}
+	}
+	
+	public void brickBouncer (Ball b) {
+		for (int i = 0; i < 12; i++) {
+			for (int j = 0; j < columns.get(i).getBrickList().size(); j++) {
+				if(b.getY() < columns.get(i).getBrickList().get(j).getY() + 55
+						&& b.getY() > columns.get(i).getBrickList().get(j).getY() + 55 - 20// bottom collision
+						&& b.getX() + 19 > columns.get(i).getBrickList().get(j).getX()
+						&& b.getX() + 19 < columns.get(i).getBrickList().get(j).getX() + 160
+						&& columns.get(i).getBrickList().get(j).isActive()) {
+					
 					b.setY(b.getY() + 6);
 					b.setVy(b.getVy() * -1);
 				}
-				if (b.getY() < columns.get(i).getBrickList().get(j).getY() + 55
+				if(b.getY() + 38 > columns.get(i).getBrickList().get(j).getY()
+						&& b.getY() + 38 < columns.get(i).getBrickList().get(j).getY() + 20 // top collision
+						&& b.getX() + 19 > columns.get(i).getBrickList().get(j).getX()
+						&& b.getX() + 19 < columns.get(i).getBrickList().get(j).getX() + 160
+						&& columns.get(i).getBrickList().get(j).isActive()) {
+					b.setY(b.getY() - 6);
+					b.setVy(b.getVy() * -1);
+				}
+				if((b.getY() < columns.get(i).getBrickList().get(j).getY() + 55 // left collision
 						&& b.getY() + 38 > columns.get(i).getBrickList().get(j).getY()
 						&& b.getX() + 38 > columns.get(i).getBrickList().get(j).getX()
-						&& b.getX() + 38 < columns.get(i).getBrickList().get(j).getX() + 38) {
+						&& b.getX() + 38 < columns.get(i).getBrickList().get(j).getX() + 38
+						&& columns.get(i).getBrickList().get(j).isActive())) {
 					b.setX(b.getX() - 6);
 					b.setVx(b.getVx() * -1);
 				}
-				if (b.getY() < columns.get(i).getBrickList().get(j).getY() + 55
+				if(b.getY() < columns.get(i).getBrickList().get(j).getY() + 55 // right collision
 						&& b.getY() + 38 > columns.get(i).getBrickList().get(j).getY()
 						&& b.getX() < columns.get(i).getBrickList().get(j).getX() + 160
-						&& b.getX() > columns.get(i).getBrickList().get(j).getX() + 160 - 38) {
+						&& b.getX() > columns.get(i).getBrickList().get(j).getX() + 160 - 38
+						&& columns.get(i).getBrickList().get(j).isActive()) {
 					b.setX(b.getX() + 6);
 					b.setVx(b.getVx() * -1);
+				}
+			}
+		}
+	}
+
+	public void replaceBrick(int col, int brick) {
+		if (columns.get(col).getBrickList().get(brick).getType() == 1) {
+			columns.get(col).getBrickList().get(brick).changeImage("brick1crack.PNG");
+		}
+		if (columns.get(col).getBrickList().get(brick).getType() == 2) {
+			columns.get(col).getBrickList().get(brick).changeImage("brick2crack.PNG");
+		}
+		if (columns.get(col).getBrickList().get(brick).getType() == 3) {
+			columns.get(col).getBrickList().get(brick).changeImage("brick3crack.PNG");
+		}
+		if (columns.get(col).getBrickList().get(brick).getType() == 4) {
+			columns.get(col).getBrickList().get(brick).changeImage("brick4crack.PNG");
+		}
+	}
+
+	public void brickChecker() {
+		for (int i = 0; i < 12; i++) {
+			for (int j = 0; j < columns.get(i).getBrickList().size(); j++) {
+				if (columns.get(i).getBrickList().get(j).isActive() == true) {
+					if (columns.get(i).getBrickList().get(j).getType() == 1
+							&& columns.get(i).getBrickList().get(j).getNumHits() >= 2) {
+						columns.get(i).getBrickList().get(j).setActive(false);
+
+					}
+					if (columns.get(i).getBrickList().get(j).getType() == 2
+							&& columns.get(i).getBrickList().get(j).getNumHits() >= 3) {
+						columns.get(i).getBrickList().get(j).setActive(false);
+
+					}
+					if (columns.get(i).getBrickList().get(j).getType() == 3
+							&& columns.get(i).getBrickList().get(j).getNumHits() >= 4) {
+						columns.get(i).getBrickList().get(j).setActive(false);
+
+					}
+					if (columns.get(i).getBrickList().get(j).getType() == 4
+							&& columns.get(i).getBrickList().get(j).getNumHits() >= 6) {
+						columns.get(i).getBrickList().get(j).setActive(false);
+
+					}
 				}
 
 			}

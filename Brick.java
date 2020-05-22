@@ -22,6 +22,7 @@ public class Brick {
 		y = 0;
 		cracked = false;
 		active = true;
+		numHits = 0;
 
 		img = getImage(fileName);
 		updateBrick();
@@ -31,8 +32,13 @@ public class Brick {
 		x = newX;
 		y = newY;
 		type = newType;
+		numHits = 0;
+		active = true;
 		img = getImage(newFileName);
 		updateBrick();
+	}
+	public void changeImage(String newFileName) {
+		img = getImage(newFileName);
 	}
 
 	
@@ -106,5 +112,6 @@ public class Brick {
 	public void setActive(boolean active) {
 		this.active = active;
 	}
+
 	
 }

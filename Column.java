@@ -15,7 +15,7 @@ public class Column {
 	private ArrayList<Brick> brickList;
 	
 	public Column(int n) {
-		length = (int) (Math.random() * (8 - 2 + 1)) + (2);
+		length = (int) (Math.random() * (10 - 2 + 1)) + (2);
 		num = n;
 		brickList = new ArrayList<Brick>();
 	}

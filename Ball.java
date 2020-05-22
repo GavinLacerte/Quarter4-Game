@@ -17,8 +17,8 @@ public class Ball {
 	public Ball(String fileName) {
 		x = 885;
 		y = 750;
-		vx = -5;
-		vy = -10;
+		vx = (int) (Math.random() * (16 - (-16) + 1)) + (-16);;
+		vy = (int) (Math.random() * (24 - (18) + 1)) + (18) * -1;
 
 		img = getImage(fileName);
 		updateBall();
